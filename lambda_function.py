@@ -1,5 +1,6 @@
 from OpenSSL import crypto
 from datetime import datetime
+from socket import *
 import ssl
 import socket
 import os
@@ -35,6 +36,7 @@ def lambda_handler(event, context):
   
     logger.debug("Checking server certificate: " +  endpoint)
     try:
+        setdefaulttimeout(2)
         cert = ssl.get_server_certificate((endpoint, int(port)))
     except IOError as ioe:
         logger.error("Could not join server: " + str(ioe))
@@ -64,6 +66,14 @@ def lambda_handler(event, context):
         
         
 def main():
+  
+  handler = logging.StreamHandler()
+  handler.setLevel(logging.DEBUG)
+  formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+  handler.setFormatter(formatter)
+  logger = logging.getLogger()
+  logger.addHandler(handler)
+  
   lambda_handler(None, None)
   
 if __name__== "__main__":
